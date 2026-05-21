@@ -46,14 +46,18 @@ public class LoginController {
     public void handleCancel(ActionEvent event) {
         user.clear();
         pass.clear();
+        javafx.stage.Window owner = ((Node) event.getSource()).getScene().getWindow();
         try (Connection conn = Connect.connection()) {
             if (conn != null) {
                 System.out.println("Connection Successful");
+                Toast.info(owner, "Database connection OK");
             } else {
                 System.out.println("Connection Failed");
+                Toast.error(owner, "Database connection failed");
             }
         } catch (SQLException e) {
             System.out.println("Connection Failed: " + e.getMessage());
+            Toast.error(owner, "Database error: " + e.getMessage());
         }
     }
 
@@ -64,20 +68,17 @@ public class LoginController {
     public void handleLogin(ActionEvent event) {
         String username = user.getText() == null ? "" : user.getText().trim();
         String password = pass.getText() == null ? "" : pass.getText();
+        javafx.stage.Window owner = ((Node) event.getSource()).getScene().getWindow();
 
         if (username.isEmpty() || password.isEmpty()) {
-            error.setText("Please fill all the fields");
-            error.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-            error.setVisible(true);
+            Toast.error(owner, "Please fill all the fields");
             return;
         }
 
         String sql = "SELECT password FROM users WHERE username = ?";
         try (Connection conn = Connect.connection()) {
             if (conn == null) {
-                error.setText("Could not connect to the database.");
-                error.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                error.setVisible(true);
+                Toast.error(owner, "Could not connect to the database.");
                 return;
             }
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -86,27 +87,19 @@ public class LoginController {
                     if (rs.next()) {
                         String storedPassword = rs.getString("password");
                         if (storedPassword.equals(password)) {
-                            error.setText("Login successful!");
-                            error.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-                            error.setVisible(true);
+                            Toast.success(owner, "Login successful! Welcome " + username);
                             System.out.println("User '" + username + "' logged in.");
                         } else {
-                            error.setText("Incorrect password.");
-                            error.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                            error.setVisible(true);
+                            Toast.error(owner, "Incorrect password.");
                         }
                     } else {
-                        error.setText("No account found for that username.");
-                        error.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                        error.setVisible(true);
+                        Toast.error(owner, "No account found for that username.");
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            error.setText("Database error: " + e.getMessage());
-            error.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-            error.setVisible(true);
+            Toast.error(owner, "Database error: " + e.getMessage());
         }
     }
 

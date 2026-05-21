@@ -90,19 +90,20 @@ public class RegisterController {
         // ---- Client-side validation ---------------------------------------
         if (firstName.isEmpty() || lastName.isEmpty() || mail.isEmpty()
                 || user.isEmpty() || pass.isEmpty() || confirmPw.isEmpty()) {
-            showStatus("Please fill in all the fields.", false);
+            Toast.error(ownerWindow(event), "Please fill in all the fields.");
             return;
         }
         if (!validateEmail(mail)) {
-            showStatus("Please enter a valid email address.", false);
+            Toast.error(ownerWindow(event), "Please enter a valid email address.");
             return;
         }
         if (!PASSWORD_PATTERN.matcher(pass).matches()) {
-            showStatus("Password must contain an uppercase letter, a digit and a special character.", false);
+            Toast.error(ownerWindow(event),
+                    "Password must contain an uppercase letter, a digit and a special character.");
             return;
         }
         if (!pass.equals(confirmPw)) {
-            showStatus("Passwords do not match.", false);
+            Toast.error(ownerWindow(event), "Passwords do not match.");
             return;
         }
 
@@ -112,7 +113,7 @@ public class RegisterController {
 
         try (Connection conn = Connect.connection()) {
             if (conn == null) {
-                showStatus("Could not connect to the database. Check your settings.", false);
+                Toast.error(ownerWindow(event), "Could not connect to the database. Check your settings.");
                 return;
             }
 
@@ -143,17 +144,18 @@ public class RegisterController {
                 }
 
                 if (rows == 1) {
-                    showStatus("Registration successful! Redirecting to login...", true);
+                    Toast.success(ownerWindow(event),
+                            "Registration successful! Redirecting to login...");
                     clearForm();
                     // Small delay so the user can read the message
                     new Thread(() -> {
-                        try { Thread.sleep(1200); } catch (InterruptedException ignored) {}
+                        try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
                         javafx.application.Platform.runLater(() -> {
                             try { goToLogin(event); } catch (IOException ex) { ex.printStackTrace(); }
                         });
                     }).start();
                 } else {
-                    showStatus("Registration failed. Please try again.", false);
+                    Toast.error(ownerWindow(event), "Registration failed. Please try again.");
                 }
             }
 
@@ -161,16 +163,20 @@ public class RegisterController {
             // Triggered by the UNIQUE constraint on email / username
             String msg = dup.getMessage() != null ? dup.getMessage().toLowerCase() : "";
             if (msg.contains("email")) {
-                showStatus("That email is already registered.", false);
+                Toast.error(ownerWindow(event), "That email is already registered.");
             } else if (msg.contains("username")) {
-                showStatus("That username is already taken.", false);
+                Toast.error(ownerWindow(event), "That username is already taken.");
             } else {
-                showStatus("That account already exists.", false);
+                Toast.error(ownerWindow(event), "That account already exists.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            showStatus("Database error: " + e.getMessage(), false);
+            Toast.error(ownerWindow(event), "Database error: " + e.getMessage());
         }
+    }
+
+    private static javafx.stage.Window ownerWindow(ActionEvent event) {
+        return ((Node) event.getSource()).getScene().getWindow();
     }
 
     // ---------------------------------------------------------------------
@@ -178,14 +184,6 @@ public class RegisterController {
     // ---------------------------------------------------------------------
     private boolean validateEmail(String value) {
         return EMAIL_PATTERN.matcher(value).matches();
-    }
-
-    private void showStatus(String text, boolean success) {
-        if (statusMessage == null) return;
-        statusMessage.setText(text);
-        statusMessage.setStyle(success
-                ? "-fx-text-fill: green; -fx-font-weight: bold;"
-                : "-fx-text-fill: red;   -fx-font-weight: bold;");
     }
 
     private void clearForm() {
