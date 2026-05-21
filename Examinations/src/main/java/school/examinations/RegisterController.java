@@ -116,6 +116,15 @@ public class RegisterController {
                 return;
             }
 
+            // --- Diagnostic: print where this connection is actually pointing ---
+            try {
+                System.out.println("[REGISTER] Connected to: "
+                        + conn.getMetaData().getURL()
+                        + " | catalog=" + conn.getCatalog()
+                        + " | autoCommit=" + conn.getAutoCommit()
+                        + " | user=" + conn.getMetaData().getUserName());
+            } catch (SQLException ignore) { /* diagnostic only */ }
+
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, firstName);
                 ps.setString(2, lastName);
@@ -124,6 +133,15 @@ public class RegisterController {
                 ps.setString(5, pass);
 
                 int rows = ps.executeUpdate();
+                System.out.println("[REGISTER] executeUpdate returned rows=" + rows
+                        + " for username='" + user + "'");
+
+                // Belt and suspenders: commit explicitly in case autoCommit was off
+                if (!conn.getAutoCommit()) {
+                    conn.commit();
+                    System.out.println("[REGISTER] Explicit commit() called.");
+                }
+
                 if (rows == 1) {
                     showStatus("Registration successful! Redirecting to login...", true);
                     clearForm();
