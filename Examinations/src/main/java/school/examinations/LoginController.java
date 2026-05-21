@@ -84,8 +84,8 @@ public class LoginController {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        String storedHash = rs.getString("password");
-                        if (storedHash.equals(PasswordUtil.hash(password))) {
+                        String storedPassword = rs.getString("password");
+                        if (storedPassword.equals(password)) {
                             error.setText("Login successful!");
                             error.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
                             error.setVisible(true);

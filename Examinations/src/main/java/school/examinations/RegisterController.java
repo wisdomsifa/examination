@@ -121,7 +121,7 @@ public class RegisterController {
                 ps.setString(2, lastName);
                 ps.setString(3, mail);
                 ps.setString(4, user);
-                ps.setString(5, PasswordUtil.hash(pass));
+                ps.setString(5, pass);
 
                 int rows = ps.executeUpdate();
                 if (rows == 1) {
