@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="216.0" prefWidth="299.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="school.examinations.LoginController">
+   <children>
+      <Label layoutX="48.0" layoutY="27.0" text="Enter username and password to login" textFill="#176ae8" />
+      <Label layoutX="48.0" layoutY="58.0" text="username" />
+      <Label layoutX="48.0" layoutY="90.0" text="password" />
+      <PasswordField fx:id="pass" layoutX="111.0" layoutY="86.0" promptText="password" />
+      <TextField fx:id="user" layoutX="111.0" layoutY="54.0" promptText="username" />
+      <Button fx:id="cancel" layoutX="111.0" layoutY="126.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" />
+      <Button fx:id="login" layoutX="208.0" layoutY="127.0" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+      <Label fx:id="error" layoutX="74.0" layoutY="179.0" />
+      <Hyperlink fx:id="register1" layoutX="200.0" layoutY="168.0" onAction="#handleRegister" text="Register" />
+   </children>
+</AnchorPane>
