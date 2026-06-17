@@ -1,0 +1,6 @@
+# Copy this file to db.properties and update with your real credentials.
+# db.properties is gitignored so your password never gets committed.
+
+db.url=jdbc:mysql://localhost:3306/examinations?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+db.user=root
+db.password=your_password_here
